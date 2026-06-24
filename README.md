@@ -1,5 +1,7 @@
 # 🎧 Lista Compra Masiera
 
+**▶️ App en vivo: [lista-compra-masiera.vercel.app](https://lista-compra-masiera.vercel.app)**
+
 Tu lista de la compra… pero con la estética de un **cartel de fiesta de la Discoteca Masía**.
 Cada producto que añades aparece como un **DJ en el line-up**; cuando lo compras, queda
 sellado con un **SOLD OUT** como un artista que ya ha pinchado.
