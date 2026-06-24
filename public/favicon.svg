@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="20%" r="75%">
+      <stop offset="0%" stop-color="#E8821E" stop-opacity="0.55"/>
+      <stop offset="55%" stop-color="#E8821E" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F4EDE2" stop-opacity="0.85"/>
+      <stop offset="45%" stop-color="#F4EDE2" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fondo -->
+  <rect x="0" y="0" width="512" height="512" rx="96" fill="#0a0806"/>
+  <rect x="0" y="0" width="512" height="512" rx="96" fill="url(#glow)"/>
+  <rect x="8" y="8" width="496" height="496" rx="88" fill="none" stroke="#E8821E" stroke-opacity="0.35" stroke-width="4"/>
+
+  <!-- Disco / vinilo -->
+  <g transform="translate(256 262)">
+    <circle r="178" fill="#15110c" stroke="#E8821E" stroke-width="8"/>
+    <circle r="150" fill="none" stroke="#E8821E" stroke-opacity="0.30" stroke-width="3"/>
+    <circle r="118" fill="none" stroke="#E8821E" stroke-opacity="0.22" stroke-width="3"/>
+    <circle r="86" fill="none" stroke="#F4EDE2" stroke-opacity="0.14" stroke-width="3"/>
+    <!-- Brillo -->
+    <path d="M -150 -96 A 178 178 0 0 1 96 -150" fill="none" stroke="url(#shine)" stroke-width="10" stroke-linecap="round"/>
+    <!-- Etiqueta central -->
+    <circle r="52" fill="#E8821E"/>
+    <circle r="52" fill="none" stroke="#0a0806" stroke-opacity="0.25" stroke-width="3"/>
+    <circle r="10" fill="#0a0806"/>
+  </g>
+</svg>

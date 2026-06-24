@@ -1,0 +1,238 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===========================================================================
+   ESTÉTICA "CARTEL MASIA" — inspirado en el flyer LOCO FESTIVAL:
+   negro/tierra quemada, neón ámbar, crema desgastado y mucha textura grunge.
+   =========================================================================== */
+
+:root {
+  /* Textura de grano/grunge reutilizable (ruido fractal en SVG inline). */
+  --noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* Máscara para desgastar los bordes de las letras del titular. */
+  --erode: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='160'%3E%3Cfilter id='e'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.16' numOctaves='3' seed='7'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -1.4 1.55'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' fill='%23fff'/%3E%3Crect width='100%25' height='100%25' filter='url(%23e)'/%3E%3C/svg%3E");
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background-color: #0a0806;
+  color: theme('colors.masia.cream');
+  font-family: theme('fontFamily.head');
+  /* Capa 1: foco/halo ámbar arriba (como el reflector del cartel).
+     Capa 2: vignette que oscurece los bordes.
+     Capa 3: color base. */
+  background-image:
+    radial-gradient(120% 70% at 50% -8%, rgba(232, 130, 30, 0.22), rgba(232, 130, 30, 0) 55%),
+    radial-gradient(140% 120% at 50% 30%, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.85) 100%),
+    linear-gradient(180deg, #120d08 0%, #0a0806 60%, #060403 100%);
+  background-attachment: fixed;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Grano global sutil por encima de todo (no intercepta clicks). */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: var(--noise);
+  background-size: 240px 240px;
+  opacity: 0.06;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+@layer components {
+  /* Marco del cartel: el panel central donde vive todo el line-up. */
+  .poster {
+    position: relative;
+    background:
+      radial-gradient(90% 50% at 50% 0%, rgba(232, 130, 30, 0.12), rgba(0, 0, 0, 0) 60%),
+      linear-gradient(180deg, #14100b 0%, #0c0907 100%);
+    border: 1px solid rgba(232, 130, 30, 0.25);
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.6),
+      0 30px 80px -20px rgba(0, 0, 0, 0.9),
+      inset 0 1px 0 rgba(244, 237, 226, 0.06);
+    overflow: hidden;
+  }
+
+  /* Textura grunge dentro del marco. */
+  .poster::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: var(--noise);
+    background-size: 220px 220px;
+    opacity: 0.05;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  /* Etiqueta naranja en versalitas, como "PSIQUIATRAS EXPERTOS". */
+  .label-ember {
+    font-family: theme('fontFamily.head');
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+    color: theme('colors.masia.flame');
+    font-size: 0.66rem;
+  }
+
+  /* Línea divisoria con un punto central, estilo separador de cartel. */
+  .rule-dot {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: rgba(232, 130, 30, 0.55);
+  }
+  .rule-dot::before,
+  .rule-dot::after {
+    content: '';
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, transparent, rgba(232, 130, 30, 0.5), transparent);
+  }
+
+  /* Titular gigante desgastado (estilo "LOCO"). */
+  .title-mega {
+    font-family: theme('fontFamily.display');
+    line-height: 0.84;
+    text-transform: uppercase;
+    letter-spacing: 0.005em;
+    color: theme('colors.masia.cream');
+    text-shadow:
+      0 1px 0 rgba(0, 0, 0, 0.5),
+      0 0 22px rgba(244, 237, 226, 0.12);
+  }
+  /* Desgaste de bordes (pintura comida) sobre el titular. */
+  .distress {
+    -webkit-mask-image: var(--erode);
+    mask-image: var(--erode);
+    -webkit-mask-size: cover;
+    mask-size: cover;
+    -webkit-mask-position: center;
+    mask-position: center;
+  }
+
+  /* Nombre de cada producto del line-up. */
+  .lineup-name {
+    font-family: theme('fontFamily.display');
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    line-height: 0.92;
+    color: theme('colors.masia.cream');
+    word-break: break-word;
+  }
+
+  /* Sello "SOLD OUT" diagonal sobre los productos ya comprados. */
+  .stamp {
+    font-family: theme('fontFamily.head');
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: theme('colors.masia.ember');
+    border: 2px solid theme('colors.masia.ember');
+    border-radius: 4px;
+    padding: 0.1rem 0.5rem;
+    opacity: 0.92;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+    /* Textura para que el sello parezca tinta gastada. */
+    -webkit-mask-image: var(--noise);
+    mask-image: var(--noise);
+    -webkit-mask-size: 80px 80px;
+    mask-size: 80px 80px;
+  }
+
+  /* Botón principal tipo "AÑADIR AL CARTEL". */
+  .btn-ember {
+    font-family: theme('fontFamily.head');
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #1a0f04;
+    background: linear-gradient(180deg, #f6a92a 0%, #e8821e 100%);
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.35),
+      0 8px 18px -8px rgba(232, 130, 30, 0.8),
+      inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    transition: transform 0.08s ease, filter 0.15s ease;
+  }
+  .btn-ember:active {
+    transform: translateY(1px) scale(0.99);
+    filter: brightness(1.05);
+  }
+  .btn-ember:disabled {
+    filter: grayscale(0.6) brightness(0.7);
+    box-shadow: none;
+  }
+
+  /* Botón fantasma (acciones secundarias). */
+  .btn-ghost {
+    font-family: theme('fontFamily.head');
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: theme('colors.masia.bone');
+    border: 1px solid rgba(244, 237, 226, 0.18);
+    background: rgba(244, 237, 226, 0.03);
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .btn-ghost:active {
+    color: theme('colors.masia.ember');
+    border-color: rgba(232, 130, 30, 0.5);
+  }
+
+  /* Badge de cantidad (x2, x3...). */
+  .badge-qty {
+    font-family: theme('fontFamily.head');
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: theme('colors.masia.ember');
+    border: 1.5px solid rgba(232, 130, 30, 0.65);
+    border-radius: 999px;
+    line-height: 1;
+  }
+
+  /* Input de texto del cartel. */
+  .input-cartel {
+    background: rgba(0, 0, 0, 0.45);
+    border: 1px solid rgba(244, 237, 226, 0.16);
+    color: theme('colors.masia.cream');
+    font-family: theme('fontFamily.head');
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .input-cartel::placeholder {
+    color: rgba(205, 195, 180, 0.4);
+  }
+  .input-cartel:focus {
+    outline: none;
+    border-color: rgba(232, 130, 30, 0.7);
+    box-shadow: 0 0 0 3px rgba(232, 130, 30, 0.15);
+  }
+}
+
+/* Respeta a quien prefiere menos movimiento. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

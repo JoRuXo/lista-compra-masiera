@@ -1,0 +1,10 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Redirige todas las rutas a index.html (app de una sola pagina / SPA),
+# necesario para que el enlace magico de Supabase aterrice bien.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
