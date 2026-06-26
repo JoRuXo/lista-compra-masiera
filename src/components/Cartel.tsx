@@ -8,6 +8,7 @@ import { LineupItem } from './LineupItem'
 import { ConfirmDialog } from './ConfirmDialog'
 import { EditItemDialog } from './EditItemDialog'
 import { EditCartelDialog } from './EditCartelDialog'
+import { SetPasswordDialog } from './SetPasswordDialog'
 
 interface CartelProps {
   userId: string
@@ -44,6 +45,7 @@ export function Cartel({ userId, email, onSignOut }: CartelProps) {
   const [editandoItem, setEditandoItem] = useState<Item | null>(null)
   const [editandoCartel, setEditandoCartel] = useState(false)
   const [confirmando, setConfirmando] = useState<null | 'comprados' | 'todo'>(null)
+  const [pwdOpen, setPwdOpen] = useState(false)
 
   const hayItems = pendientes.length + comprados.length > 0
 
@@ -159,12 +161,21 @@ export function Cartel({ userId, email, onSignOut }: CartelProps) {
           <p className="mt-1 truncate text-sm lowercase text-masia-bone" title={email}>
             {email}
           </p>
-          <button
-            onClick={onSignOut}
-            className="mt-3 text-[0.65rem] uppercase tracking-[0.25em] text-masia-ash underline-offset-4 hover:text-masia-ember hover:underline"
-          >
-            Salir del recinto
-          </button>
+          <div className="mt-3 flex items-center justify-center gap-4">
+            <button
+              onClick={() => setPwdOpen(true)}
+              className="text-[0.65rem] uppercase tracking-[0.25em] text-masia-ash underline-offset-4 hover:text-masia-ember hover:underline"
+            >
+              🔑 Contraseña
+            </button>
+            <span className="text-masia-ash/40">·</span>
+            <button
+              onClick={onSignOut}
+              className="text-[0.65rem] uppercase tracking-[0.25em] text-masia-ash underline-offset-4 hover:text-masia-ember hover:underline"
+            >
+              Salir del recinto
+            </button>
+          </div>
           <p className="mt-5 text-[0.6rem] uppercase tracking-[0.3em] text-masia-ash">
             www·lista-masiá·com
           </p>
@@ -186,6 +197,7 @@ export function Cartel({ userId, email, onSignOut }: CartelProps) {
         onGuardar={setMeta}
         onCerrar={() => setEditandoCartel(false)}
       />
+      <SetPasswordDialog abierto={pwdOpen} onCerrar={() => setPwdOpen(false)} />
       <ConfirmDialog
         abierto={confirmando === 'comprados'}
         titulo="Vaciar sold out"
