@@ -30,7 +30,7 @@ export default defineConfig({
       },
       workbox: {
         // Cachea los archivos de la app (app shell) para funcionamiento offline.
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff,woff2}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
         navigateFallback: 'index.html',
         runtimeCaching: [
           {

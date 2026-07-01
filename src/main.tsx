@@ -10,6 +10,8 @@ import '@fontsource/oswald/400.css'
 import '@fontsource/oswald/500.css'
 import '@fontsource/oswald/600.css'
 import '@fontsource/oswald/700.css'
+import '@fontsource/grenze-gotisch/700.css'
+import '@fontsource/grenze-gotisch/900.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

@@ -157,51 +157,28 @@ export function useItems(userId: string | null) {
     }
   }, [])
 
-  // Mover un pendiente arriba/abajo intercambiando su 'orden' con el vecino.
-  const mover = useCallback(async (item: Item, direccion: -1 | 1) => {
-    const pendientes = ordenarItems(itemsRef.current).filter((i) => !i.comprado)
-    const idx = pendientes.findIndex((i) => i.id === item.id)
-    const vecino = pendientes[idx + direccion]
-    if (!vecino) return
-
-    const ordenA = item.orden
-    const ordenB = vecino.orden
-    setItems((prev) =>
-      ordenarItems(
-        prev.map((i) => {
-          if (i.id === item.id) return { ...i, orden: ordenB }
-          if (i.id === vecino.id) return { ...i, orden: ordenA }
-          return i
-        }),
-      ),
-    )
-
+  // Reordena los pendientes segun una lista de ids y persiste el nuevo 'orden'
+  // en Supabase (para que el orden se mantenga al recargar / en otros dispositivos).
+  const reordenar = useCallback(async (idsEnOrden: string[]) => {
     const snapshot = itemsRef.current
-    const [r1, r2] = await Promise.all([
-      supabase.from('items').update({ orden: ordenB }).eq('id', item.id),
-      supabase.from('items').update({ orden: ordenA }).eq('id', vecino.id),
-    ])
-    if (r1.error || r2.error) {
-      setItems(snapshot)
-      setError(r1.error?.message ?? r2.error?.message ?? 'Error al reordenar')
-    }
-  }, [])
+    setItems((prev) => {
+      const byId = new Map(prev.map((i) => [i.id, i]))
+      const reordenados = idsEnOrden
+        .map((id, idx) => {
+          const it = byId.get(id)
+          return it ? { ...it, orden: idx } : null
+        })
+        .filter((x): x is Item => x !== null)
+      const resto = prev.filter((i) => !idsEnOrden.includes(i.id))
+      return ordenarItems([...reordenados, ...resto])
+    })
 
-  // Convertir un producto en cabeza de cartel (lo manda al principio).
-  const hacerHeadliner = useCallback(async (item: Item) => {
-    const minOrden = itemsRef.current.reduce((m, i) => Math.min(m, i.orden), 0)
-    const nuevoOrden = minOrden - 1
-    const snapshot = itemsRef.current
-    setItems((prev) =>
-      ordenarItems(prev.map((i) => (i.id === item.id ? { ...i, orden: nuevoOrden, comprado: false } : i))),
+    const results = await Promise.all(
+      idsEnOrden.map((id, idx) => supabase.from('items').update({ orden: idx }).eq('id', id)),
     )
-    const { error } = await supabase
-      .from('items')
-      .update({ orden: nuevoOrden, comprado: false })
-      .eq('id', item.id)
-    if (error) {
+    if (results.some((r) => r.error)) {
       setItems(snapshot)
-      setError(error.message)
+      setError('Error al reordenar')
     }
   }, [])
 
@@ -241,8 +218,7 @@ export function useItems(userId: string | null) {
     toggleComprado,
     updateItem,
     remove,
-    mover,
-    hacerHeadliner,
+    reordenar,
     vaciarComprados,
     vaciarTodo,
     refetch: fetchItems,

@@ -21,11 +21,12 @@ tipografías enormes desgastadas y mucha textura grunge.
 - **Tocar un producto** = marcarlo comprado → sello **SOLD OUT**, tachado y atenuado.
 - Los comprados **bajan solos** al final de la lista.
 - **Cabeza de cartel**: el primer producto se destaca como headliner 🎧.
-- **Reordenar** (subir/bajar, hacer cabeza de cartel) y **deslizar para borrar** en móvil.
-- **Editar** nombre y cantidad de cualquier producto.
+- **Reordenar arrastrando** (drag & drop con ratón y táctil); el nuevo orden se guarda.
+- **Editar y borrar** con iconos siempre visibles (borrado con confirmación ligera).
 - **Vaciar sold out** y **vaciar todo** (con confirmación).
 - **Titular y fecha editables** (personaliza tu cartel; se guarda en el dispositivo).
 - **Microinteracciones**: animaciones al añadir/marcar y **vibración** en móvil.
+- **Acceso privado** con email + contraseña y **sesión persistente**.
 - **Sincronización en tiempo real** entre dispositivos (Supabase Realtime).
 - **Offline**: la PWA cachea la app y sincroniza al recuperar conexión.
 
@@ -37,7 +38,8 @@ tipografías enormes desgastadas y mucha textura grunge.
 - **Tailwind CSS 3** (toda la "piel" del cartel)
 - **Supabase** (Postgres + Auth + Realtime) vía `@supabase/supabase-js`
 - **vite-plugin-pwa** (instalable + offline)
-- Fuentes auto-alojadas con `@fontsource` (**Anton** + **Oswald**) → funcionan offline
+- **@dnd-kit** para reordenar arrastrando
+- Fuentes libres auto-alojadas con `@fontsource` (**Anton**, **Oswald**, **Grenze Gotisch**) → offline
 
 ---
 
@@ -60,7 +62,7 @@ npm run icons
 npm run dev
 ```
 
-Abre **http://localhost:5173**, mete tu email y te llega un **enlace mágico** para entrar.
+Abre **http://localhost:5173**, crea tu cuenta con **email + contraseña** y entras al momento.
 
 ### Scripts disponibles
 
@@ -114,9 +116,10 @@ Resumen de la tabla:
 
 1. Crea un proyecto nuevo en [supabase.com](https://supabase.com).
 2. Ve a **SQL Editor** y ejecuta el contenido de [`supabase/schema.sql`](supabase/schema.sql).
-3. En **Authentication → Providers → Email**, deja activado el **Magic Link**.
-4. En **Authentication → URL Configuration**, añade la URL donde despliegues
-   (y `http://localhost:5173`) a **Redirect URLs**.
+3. En **Authentication → Sign In / Providers → Email**: deja activado el proveedor
+   **Email** y **desactiva "Confirm email"** (registro directo, sin confirmar correo).
+4. (Opcional) Tras crear tu cuenta, desactiva **"Allow new users to sign up"** para
+   que nadie más pueda registrarse.
 5. Copia `Project URL` y la clave pública a tu `.env`.
 
 ---
@@ -131,16 +134,16 @@ La app es 100% estática (genera `dist/`). Funciona en cualquier hosting de est�
 2. Framework preset: **Vite**. Build command: `npm run build`. Output: `dist`.
 3. En **Settings → Environment Variables** añade `VITE_SUPABASE_URL` y
    `VITE_SUPABASE_ANON_KEY`.
-4. Deploy. Copia la URL final a las **Redirect URLs** de Supabase (paso 4 de arriba).
+4. Deploy. ¡Listo! (Con login por email + contraseña no hacen falta Redirect URLs.)
 
 ### Netlify
 
 1. Importa el repo en [netlify.com](https://netlify.com).
 2. Build command: `npm run build`. Publish directory: `dist`.
-3. Añade las mismas variables de entorno y la URL a las Redirect URLs de Supabase.
+3. Añade las mismas variables de entorno.
 
 > El archivo [`netlify.toml`](netlify.toml) ya incluye el *redirect* de SPA para que
-> el enlace mágico y las rutas funcionen.
+> las rutas de la app funcionen.
 
 ---
 

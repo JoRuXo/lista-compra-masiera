@@ -1,3 +1,6 @@
+import type { CSSProperties } from 'react'
+import { Wordmark } from './Wordmark'
+
 export interface CartelMeta {
   tituloArriba: string
   tituloAbajo: string
@@ -9,39 +12,41 @@ interface PosterHeaderProps {
   onEditar: () => void
 }
 
-// Cabecera del cartel: wordmark + titular gigante editable + linea de fecha.
-// Replica la composicion del flyer (MASIA / titular / subtitulo / fecha).
+// Cabecera del cartel: wordmark "MASIÁ" + titular gigante editable + fecha.
+// Replica la composicion del flyer (marca / titular / subtitulo / fecha).
 export function PosterHeader({ meta, onEditar }: PosterHeaderProps) {
+  const tituloArriba = meta.tituloArriba || 'LA COMPRA'
+  const tituloAbajo = meta.tituloAbajo || 'SEMANAL'
+
   return (
     <header className="relative px-5 pt-7 text-center">
-      {/* Wordmark de la "marca" (identidad propia, no el logo oficial) */}
-      <p className="label-ember mb-2">Psiquiatras de la compra presentan</p>
-      <p
-        className="font-display leading-none tracking-[0.16em] text-masia-cream"
-        style={{ fontSize: 'clamp(1.1rem, 5.5vw, 1.6rem)' }}
-      >
-        MASI<span className="text-masia-ember">Á</span>
-      </p>
+      <p className="label-ember mb-3">Psiquiatras de la compra presentan</p>
 
-      {/* Titular gigante editable (estilo "LOCO / FESTIVAL") */}
+      {/* Logotipo propio (SVG) */}
+      <Wordmark className="mx-auto h-11 w-auto sm:h-14" />
+
+      {/* Titular gigante editable, maquetado como unidad de cartel:
+          el titular manda y el subtitulo se reparte a su mismo ancho
+          (como "FESTIVAL" bajo "LOCO" en el flyer real). */}
       <button
         onClick={onEditar}
-        className="group mt-3 block w-full select-none"
+        className="group mt-4 flex w-full select-none flex-col items-center"
         aria-label="Editar el titulo del cartel"
       >
-        <span
-          className="title-mega distress block"
-          style={{ fontSize: 'clamp(3.4rem, 17vw, 5.5rem)' }}
-        >
-          {meta.tituloArriba || 'LA COMPRA'}
+        <span className="relative inline-block">
+          <span
+            className="title-mega distress block leading-[0.8]"
+            style={{ fontSize: 'clamp(3rem, 15.5vw, 5.25rem)' }}
+          >
+            {tituloArriba}
+          </span>
+          <SpreadWord
+            text={tituloAbajo}
+            className="title-mega mt-1 leading-none text-masia-ember"
+            style={{ fontSize: 'clamp(1.3rem, 6.6vw, 2.05rem)' }}
+          />
         </span>
-        <span
-          className="title-mega block text-masia-ember"
-          style={{ fontSize: 'clamp(1.6rem, 8vw, 2.6rem)', letterSpacing: '0.06em' }}
-        >
-          {meta.tituloAbajo || 'SEMANAL'}
-        </span>
-        <span className="mt-1 inline-block text-[0.6rem] uppercase tracking-[0.25em] text-masia-ash opacity-0 transition-opacity group-hover:opacity-100">
+        <span className="mt-2 inline-block text-[0.6rem] uppercase tracking-[0.25em] text-masia-ash opacity-0 transition-opacity group-hover:opacity-100">
           ✎ tocar para editar
         </span>
       </button>
@@ -55,5 +60,35 @@ export function PosterHeader({ meta, onEditar }: PosterHeaderProps) {
         <span className="text-xs">✦</span>
       </div>
     </header>
+  )
+}
+
+// Reparte las letras de una palabra a lo ancho del contenedor (ancho del
+// titular), para el efecto "subtitulo justificado" de cartel.
+function SpreadWord({
+  text,
+  className = '',
+  style,
+}: {
+  text: string
+  className?: string
+  style?: CSSProperties
+}) {
+  const chars = [...text]
+  if (chars.length < 2) {
+    return (
+      <span className={className} style={style}>
+        {text}
+      </span>
+    )
+  }
+  return (
+    <span className={`flex w-full justify-between ${className}`} style={style} aria-label={text}>
+      {chars.map((c, i) => (
+        <span key={i} aria-hidden>
+          {c === ' ' ? ' ' : c}
+        </span>
+      ))}
+    </span>
   )
 }

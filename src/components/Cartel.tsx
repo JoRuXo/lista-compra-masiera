@@ -1,10 +1,26 @@
 import { useState } from 'react'
+import {
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  closestCenter,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
 import type { Item } from '../types'
 import { useItems } from '../hooks/useItems'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { PosterHeader, type CartelMeta } from './PosterHeader'
 import { AddBar } from './AddBar'
 import { LineupItem } from './LineupItem'
+import { SortableLineupItem } from './SortableLineupItem'
 import { ConfirmDialog } from './ConfirmDialog'
 import { EditItemDialog } from './EditItemDialog'
 import { EditCartelDialog } from './EditCartelDialog'
@@ -33,8 +49,7 @@ export function Cartel({ userId, email, onSignOut }: CartelProps) {
     toggleComprado,
     updateItem,
     remove,
-    mover,
-    hacerHeadliner,
+    reordenar,
     vaciarComprados,
     vaciarTodo,
   } = useItems(userId)
@@ -48,6 +63,23 @@ export function Cartel({ userId, email, onSignOut }: CartelProps) {
   const [pwdOpen, setPwdOpen] = useState(false)
 
   const hayItems = pendientes.length + comprados.length > 0
+
+  // Sensores de arrastre: raton/tactil (con pequeño umbral para que un toque
+  // no dispare el arrastre) y teclado (accesibilidad).
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 6 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  )
+
+  function onDragEnd(e: DragEndEvent) {
+    const { active, over } = e
+    if (!over || active.id === over.id) return
+    const ids = pendientes.map((i) => i.id)
+    const from = ids.indexOf(String(active.id))
+    const to = ids.indexOf(String(over.id))
+    if (from < 0 || to < 0) return
+    reordenar(arrayMove(ids, from, to))
+  }
 
   return (
     <div className="mx-auto w-full max-w-xl px-3 py-4 sm:py-8">
@@ -82,30 +114,30 @@ export function Cartel({ userId, email, onSignOut }: CartelProps) {
           <div className="px-6 py-12 text-center">
             <p className="title-mega text-3xl text-masia-ash">CARTEL VACÍO</p>
             <p className="mt-2 text-sm text-masia-bone">
-              Añade tu primer producto y conviértelo en <span className="text-masia-flame">cabeza de cartel</span>.
+              Añade tu primer producto. Arrástralo arriba del todo para hacerlo{' '}
+              <span className="text-masia-flame">cabeza de cartel</span>.
             </p>
           </div>
         )}
 
-        {/* Pendientes */}
+        {/* Pendientes (arrastrables para reordenar) */}
         {!loading && pendientes.length > 0 && (
-          <ul className="mt-1">
-            {pendientes.map((item, i) => (
-              <li key={item.id} className="animate-flash-in border-b border-masia-cream/5 last:border-b-0">
-                <LineupItem
-                  item={item}
-                  esHeadliner={i === 0}
-                  puedeSubir={i > 0}
-                  puedeBajar={i < pendientes.length - 1}
-                  onToggle={toggleComprado}
-                  onEditar={setEditandoItem}
-                  onBorrar={(it) => remove(it.id)}
-                  onMover={mover}
-                  onHeadliner={hacerHeadliner}
-                />
-              </li>
-            ))}
-          </ul>
+          <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+            <SortableContext items={pendientes.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+              <ul className="mt-1">
+                {pendientes.map((item, i) => (
+                  <SortableLineupItem
+                    key={item.id}
+                    item={item}
+                    esHeadliner={i === 0}
+                    onToggle={toggleComprado}
+                    onEditar={setEditandoItem}
+                    onBorrar={(it) => remove(it.id)}
+                  />
+                ))}
+              </ul>
+            </SortableContext>
+          </DndContext>
         )}
 
         {/* Comprados (sold out) */}
@@ -124,13 +156,9 @@ export function Cartel({ userId, email, onSignOut }: CartelProps) {
                   <LineupItem
                     item={item}
                     esHeadliner={false}
-                    puedeSubir={false}
-                    puedeBajar={false}
                     onToggle={toggleComprado}
                     onEditar={setEditandoItem}
                     onBorrar={(it) => remove(it.id)}
-                    onMover={mover}
-                    onHeadliner={hacerHeadliner}
                   />
                 </li>
               ))}

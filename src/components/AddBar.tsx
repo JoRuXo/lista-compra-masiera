@@ -50,6 +50,7 @@ export function AddBar({ onAdd }: AddBarProps) {
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
           placeholder="AÑADE UN PRODUCTO…"
+          aria-label="Nombre del producto"
           enterKeyHint="done"
           className="input-cartel min-w-0 flex-1 rounded-md px-4 py-2.5 text-sm"
           maxLength={120}
